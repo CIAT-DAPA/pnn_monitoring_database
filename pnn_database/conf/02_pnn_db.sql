@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS public."Objective"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    description character varying COLLATE pg_catalog."default",
-    ext_id character varying(50) COLLATE pg_catalog."default"
+    description character varying COLLATE pg_catalog."default" NULL,
+    ext_id character varying(50) COLLATE pg_catalog."default" NULL
 );
 
 
@@ -27,10 +27,10 @@ CREATE TABLE IF NOT EXISTS public."Sirap"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    description character varying COLLATE pg_catalog."default",
-    region character varying(50) COLLATE pg_catalog."default",
-    prot_areas character varying COLLATE pg_catalog."default",
-    ext_id character varying(50) COLLATE pg_catalog."default"
+    description character varying COLLATE pg_catalog."default" NULL,
+    region character varying(50) COLLATE pg_catalog."default" NULL,
+    prot_areas character varying COLLATE pg_catalog."default" NULL,
+    ext_id character varying(50) COLLATE pg_catalog."default" NULL
 );
 
 
@@ -43,7 +43,6 @@ CREATE TABLE IF NOT EXISTS public."Sirap"
 CREATE TABLE IF NOT EXISTS public."Guideline"
 (
     id serial PRIMARY KEY,
-    description character varying COLLATE pg_catalog."default",
     name character varying(255) COLLATE pg_catalog."default",
     objective_id integer,
     sirap_id integer,
@@ -83,11 +82,13 @@ CREATE TABLE IF NOT EXISTS public."Action"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    description character varying COLLATE pg_catalog."default",
-    location character varying(255) COLLATE pg_catalog."default",
     action_type_id integer,
+    guideline_type_id integer,
     CONSTRAINT "Action_action_type_id_fkey" FOREIGN KEY (action_type_id)
         REFERENCES public."action_type" (id) MATCH SIMPLE
+        ON DELETE CASCADE,
+    CONSTRAINT "Action_guideline_type_id_fkey" FOREIGN KEY (guideline_type_id)
+        REFERENCES public."Guideline" (id) MATCH SIMPLE
         ON DELETE CASCADE
 );
 
@@ -104,8 +105,8 @@ CREATE TABLE IF NOT EXISTS public."Milestone"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    description character varying COLLATE pg_catalog."default",
-    product_indicator character varying COLLATE pg_catalog."default",
+    product_indicator character varying COLLATE pg_catalog."default" NULL,
+    obs character varying COLLATE pg_catalog."default" NULL, 
     action_id integer,
     CONSTRAINT "Milestone_action_id_fkey" FOREIGN KEY (action_id)
         REFERENCES public."Action" (id) MATCH SIMPLE
@@ -124,8 +125,7 @@ CREATE TABLE IF NOT EXISTS public."Product"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    observation character varying COLLATE pg_catalog."default",
-    ext_id character varying(50) COLLATE pg_catalog."default"
+    ext_id character varying(50) COLLATE pg_catalog."default" NULL
 );
 
 
@@ -161,12 +161,16 @@ CREATE TABLE IF NOT EXISTS public."Detail"
     goal integer,
     period_id integer,
     product_id integer,
+    milestone_id integer,
     implemented_value double precision,
     CONSTRAINT "Detail_period_id_fkey" FOREIGN KEY (period_id)
         REFERENCES public."Period" (id) MATCH SIMPLE
         ON DELETE CASCADE,
     CONSTRAINT "Detail_product_id_fkey" FOREIGN KEY (product_id)
         REFERENCES public."Product" (id) MATCH SIMPLE
+        ON DELETE CASCADE,
+    CONSTRAINT "Detail_milestone_id_fkey" FOREIGN KEY (milestone_id)
+        REFERENCES public."Milestone" (id) MATCH SIMPLE
         ON DELETE CASCADE
 );
 
@@ -183,7 +187,7 @@ CREATE TABLE IF NOT EXISTS public."Institution"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    ext_id character varying(50) COLLATE pg_catalog."default"
+    ext_id character varying(50) COLLATE pg_catalog."default" NULL
 
 );
 
