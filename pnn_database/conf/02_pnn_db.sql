@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS public."Milestone"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    product_indicator character varying COLLATE pg_catalog."default" NULL,
+    product_indc character varying COLLATE pg_catalog."default" NULL,
     obs character varying COLLATE pg_catalog."default" NULL, 
     action_id integer,
     CONSTRAINT "Milestone_action_id_fkey" FOREIGN KEY (action_id)
