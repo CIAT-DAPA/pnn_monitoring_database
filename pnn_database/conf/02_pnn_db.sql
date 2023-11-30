@@ -55,22 +55,6 @@ CREATE TABLE IF NOT EXISTS public."Guideline"
 );
 
 
-
---
--- Table structure for table `action_type`
---
-
--- DROP TABLE IF EXISTS public."action_type";
-
-
-CREATE TABLE IF NOT EXISTS public."action_type"
-(
-    id serial PRIMARY KEY,
-    name character varying(50) COLLATE pg_catalog."default"
-);
-
-
-
 --
 -- Table structure for table `Action`
 --
@@ -82,11 +66,7 @@ CREATE TABLE IF NOT EXISTS public."Action"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    action_type_id integer,
     guideline_type_id integer,
-    CONSTRAINT "Action_action_type_id_fkey" FOREIGN KEY (action_type_id)
-        REFERENCES public."action_type" (id) MATCH SIMPLE
-        ON DELETE CASCADE,
     CONSTRAINT "Action_guideline_type_id_fkey" FOREIGN KEY (guideline_type_id)
         REFERENCES public."Guideline" (id) MATCH SIMPLE
         ON DELETE CASCADE
