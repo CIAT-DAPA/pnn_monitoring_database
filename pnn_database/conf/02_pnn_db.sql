@@ -66,8 +66,9 @@ CREATE TABLE IF NOT EXISTS public."Action"
 (
     id serial PRIMARY KEY,
     name character varying(255) COLLATE pg_catalog."default",
-    guideline_type_id integer,
-    CONSTRAINT "Action_guideline_type_id_fkey" FOREIGN KEY (guideline_type_id)
+    action_indc character varying COLLATE pg_catalog."default" NULL,
+    guideline_id integer,
+    CONSTRAINT "Action_guideline_id_fkey" FOREIGN KEY (guideline_id)
         REFERENCES public."Guideline" (id) MATCH SIMPLE
         ON DELETE CASCADE
 );
@@ -139,6 +140,7 @@ CREATE TABLE IF NOT EXISTS public."Detail"
     quantity integer,
     date date,
     goal integer,
+    base_line integer,
     period_id integer,
     product_id integer,
     milestone_id integer,
