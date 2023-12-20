@@ -368,7 +368,8 @@ CREATE VIEW public."vista_milestone" AS
 
 
 CREATE VIEW public."view_all_data" AS
- SELECT g.sirap_id,
+SELECT
+    g.sirap_id,
     s.name AS sirap_name,
     s.description AS sirap_desc,
     s.region,
@@ -378,20 +379,20 @@ CREATE VIEW public."view_all_data" AS
     o.name AS objective_name,
     o.description AS objective_desc,
     o.ext_id AS objective_ext_id,
-    ac.guideline_id,
+	ac.guideline_id,
     g.name AS guideline_name,
-    m.action_id,
+	m.action_id,
     ac.name AS action_name,
     ac.action_indc,
     d.milestone_id,
     m.name AS milestone_name,
     m.product_indc,
-    m.obs AS milestone_obs,
-    d.id AS detail_id,
+    m.obs as milestone_obs,
+    d.id as detail_id,
     d.name AS detail_name,
     d.amount,
     d.quantity,
-    d.base_line,
+	d.base_line,
     d.date,
     d.goal,
     d.period_id,
@@ -399,78 +400,76 @@ CREATE VIEW public."view_all_data" AS
     d.product_id,
     pr.name AS product_name,
     d.implemented_value,
-        CASE
-            WHEN count(DISTINCT y.value) = 0 THEN NULL::integer[]
-            ELSE array_agg(DISTINCT y.value)
-        END AS year_values,
-        CASE
-            WHEN count(DISTINCT y.id) = 0 THEN NULL::integer[]
-            ELSE array_agg(DISTINCT y.id)
-        END AS year_ids,
-        CASE
-            WHEN count(DISTINCT
-            CASE
-                WHEN a.detail_id IS NOT NULL THEN a_i.name
-                ELSE NULL::character varying
-            END) = 0 THEN NULL::text
-            ELSE string_agg(DISTINCT
-            CASE
-                WHEN a.detail_id IS NOT NULL THEN a_i.name
-                ELSE NULL::character varying
-            END::text, ', '::text)
-        END AS actor_institution_names,
-        CASE
-            WHEN count(DISTINCT
-            CASE
-                WHEN a.detail_id IS NOT NULL THEN a_i.id
-                ELSE NULL::integer
-            END) = 0 THEN NULL::integer[]
-            ELSE array_agg(DISTINCT
-            CASE
-                WHEN a.detail_id IS NOT NULL THEN a_i.id
-                ELSE NULL::integer
-            END)
-        END AS actor_institution_ids,
-        CASE
-            WHEN count(DISTINCT
-            CASE
-                WHEN r.detail_id IS NOT NULL THEN r_i.name
-                ELSE NULL::character varying
-            END) = 0 THEN NULL::text
-            ELSE string_agg(DISTINCT
-            CASE
-                WHEN r.detail_id IS NOT NULL THEN r_i.name
-                ELSE NULL::character varying
-            END::text, ', '::text)
-        END AS responsible_institution_names,
-        CASE
-            WHEN count(DISTINCT
-            CASE
-                WHEN r.detail_id IS NOT NULL THEN r_i.id
-                ELSE NULL::integer
-            END) = 0 THEN NULL::integer[]
-            ELSE array_agg(DISTINCT
-            CASE
-                WHEN r.detail_id IS NOT NULL THEN r_i.id
-                ELSE NULL::integer
-            END)
-        END AS responsible_institution_ids
-   FROM "Sirap" s
-     LEFT JOIN "Guideline" g ON s.id = g.sirap_id
-     LEFT JOIN "Objective" o ON g.objective_id = o.id
-     LEFT JOIN "Action" ac ON g.id = ac.guideline_id
-     LEFT JOIN "Milestone" m ON ac.id = m.action_id
-     LEFT JOIN "Detail" d ON m.id = d.milestone_id
-     LEFT JOIN "Product" pr ON d.product_id = pr.id
-     LEFT JOIN "Time" t ON d.id = t.detail_id
-     LEFT JOIN "Year" y ON t.year_id = y.id
-     LEFT JOIN "Period" p ON d.period_id = p.id
-     LEFT JOIN "Responsible" r ON d.id = r.detail_id
-     LEFT JOIN "Institution" r_i ON r.institution_id = r_i.id
-     LEFT JOIN "Actor" a ON d.id = a.detail_id
-     LEFT JOIN "Institution" a_i ON a.institution_id = a_i.id
-  GROUP BY d.id, d.name, d.amount, d.quantity, d.date, d.goal, d.period_id, d.product_id, d.milestone_id, d.implemented_value, p.name, pr.name, m.name, m.action_id, m.product_indc, m.obs, ac.name, ac.action_indc, ac.guideline_id, g.name, g.objective_id, g.sirap_id, o.name, o.description, o.ext_id, s.name, s.description, s.region, s.prot_areas, s.ext_id;
-
+    CASE
+        WHEN COUNT(DISTINCT y.value) = 0 THEN NULL
+        ELSE ARRAY_AGG(DISTINCT y.value)
+    END AS year_values,
+    CASE
+        WHEN COUNT(DISTINCT y.id) = 0 THEN NULL
+        ELSE ARRAY_AGG(DISTINCT y.id)
+    END AS year_ids,
+	CASE
+        WHEN COUNT(DISTINCT CASE WHEN a.detail_id IS NOT NULL THEN a_i.name ELSE NULL END) = 0 THEN NULL
+        ELSE STRING_AGG(DISTINCT CASE WHEN a.detail_id IS NOT NULL THEN a_i.name ELSE NULL END, ', ')
+    END AS actor_institution_names,
+    CASE
+        WHEN COUNT(DISTINCT CASE WHEN a.detail_id IS NOT NULL THEN a_i.id ELSE NULL END) = 0 THEN NULL
+        ELSE ARRAY_AGG(DISTINCT CASE WHEN a.detail_id IS NOT NULL THEN a_i.id ELSE NULL END)
+    END AS actor_institution_ids,
+    CASE
+        WHEN COUNT(DISTINCT CASE WHEN r.detail_id IS NOT NULL THEN r_i.name ELSE NULL END) = 0 THEN NULL
+        ELSE STRING_AGG(DISTINCT CASE WHEN r.detail_id IS NOT NULL THEN r_i.name ELSE NULL END, ', ')
+    END AS responsible_institution_names,
+    CASE
+        WHEN COUNT(DISTINCT CASE WHEN r.detail_id IS NOT NULL THEN r_i.id ELSE NULL END) = 0 THEN NULL
+        ELSE ARRAY_AGG(DISTINCT CASE WHEN r.detail_id IS NOT NULL THEN r_i.id ELSE NULL END)
+    END AS responsible_institution_ids
+FROM
+    public."Sirap" s
+LEFT JOIN public."Guideline" g ON s.id = g.sirap_id
+LEFT JOIN public."Objective" o ON g.objective_id = o.id
+LEFT JOIN public."Action" ac ON g.id = ac.guideline_id
+LEFT JOIN public."Milestone" m ON ac.id = m.action_id
+LEFT JOIN public."Detail" d ON m.id = d.milestone_id
+LEFT JOIN public."Product" pr ON d.product_id = pr.id
+LEFT JOIN public."Time" t ON d.id = t.detail_id
+LEFT JOIN public."Year" y ON t.year_id = y.id
+LEFT JOIN public."Period" p ON d.period_id = p.id
+LEFT JOIN public."Responsible" r ON d.id = r.detail_id
+LEFT JOIN public."Institution" r_i ON r.institution_id = r_i.id
+LEFT JOIN public."Actor" a ON d.id = a.detail_id
+LEFT JOIN public."Institution" a_i ON a.institution_id = a_i.id
+GROUP BY
+    d.id,
+    d.name,
+    d.amount,
+    d.quantity,
+    d.date,
+    d.goal,
+    d.period_id,
+    d.product_id,
+    d.milestone_id,
+    d.implemented_value,
+    p.name,
+    pr.name,
+    m.name,
+    m.action_id,
+    m.product_indc,
+    m.obs,
+    ac.name,
+	ac.action_indc,
+	ac.guideline_id,
+    g.name,
+    g.objective_id,
+    g.sirap_id,
+    o.name,
+    o.description,
+    o.ext_id,
+    s.name,
+    s.description,
+    s.region,
+    s.prot_areas,
+    s.ext_id;
 
 
 
