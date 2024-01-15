@@ -321,6 +321,7 @@ CREATE VIEW public."view_until_detail" AS
     d.quantity,
     d.date,
     d.goal,
+    d.amount * d.quantity * d.goal as total_value,
     d.implemented_value
    FROM "Sirap" s
      JOIN "Guideline" g ON s.id = g.sirap_id
@@ -336,7 +337,7 @@ CREATE VIEW public."view_until_detail" AS
 
 
 
-CREATE VIEW public."vista_milestone" AS
+CREATE VIEW public."view_milestone" AS
  SELECT s.id AS sirap_id,
     s.name AS sirap_name,
     s.description AS sirap_description,
@@ -392,9 +393,11 @@ SELECT
     d.name AS detail_name,
     d.amount,
     d.quantity,
+    d.amount * d.quantity as value_per_insumo,
 	d.base_line,
     d.date,
     d.goal,
+    d.amount * d.quantity * d.goal as value_per_goal,
     d.period_id,
     p.name AS period_name,
     d.product_id,
